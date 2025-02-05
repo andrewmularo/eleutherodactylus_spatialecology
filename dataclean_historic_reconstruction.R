@@ -30,9 +30,9 @@ planirostris_filter<- planirostris_filter %>% filter(occurrenceStatus != "ABSENT
 johnstonei_filter<- johnstonei_filter %>%  filter(occurrenceStatus != "ABSENT" )
 
 
-write.csv(coqui_filter, "coqui_history.csv")
-write.csv(planirostris_filter, "planirostris_history.csv")
-write.csv(johnstonei_filter, "johnstonei_history.csv")
+#write.csv(coqui_filter, "coqui_history.csv")
+#write.csv(planirostris_filter, "planirostris_history.csv")
+#write.csv(johnstonei_filter, "johnstonei_history.csv")
 
 ### Filter Coqui 
 
@@ -56,7 +56,7 @@ coqui_filter_climate<- coqui_filter_climate %>%
   filter(year <= 2021)
 
 
-write.csv(coqui_filter_climate, "coqui_establishedpops.csv")
+#write.csv(coqui_filter_climate, "coqui_establishedpops.csv")
 
 ## Filter planirostris 
 
@@ -83,9 +83,10 @@ planirostris_filter_climate_china<- planirostris_filter %>%
   filter(year >= 2012)%>% 
   mutate(status = "invasive")
 
+##### DOUBLE CHECK WITH JONG YOON ABOUT THIS
 planirostris_filter_climate_guam<- planirostris_filter %>% 
   filter(countryCode == "GU") %>% 
-  filter(year >= 2017)%>% 
+  filter(year >= 2015)%>% 
   mutate(status = "invasive")
 
 planirostris_filter_climate_honduras<- planirostris_filter %>% 
@@ -116,7 +117,7 @@ planirostris_filter_climate<- planirostris_filter_climate %>%
   filter(coordinateUncertaintyInMeters <= 1000) %>% 
   filter(year <= 2021)
 
-write.csv(planirostris_filter_climate, "planirostris_establishedpops.csv")
+#write.csv(planirostris_filter_climate, "planirostris_establishedpops.csv")
 
 
 ### Filter Johnstonei 
@@ -169,7 +170,7 @@ johnstonei_filter_climate<- johnstonei_filter_climate %>%
   filter(coordinateUncertaintyInMeters <= 1000) %>% 
   filter(year <= 2021)
 
-write.csv(johnstonei_filter_climate, "johnstonei_establishedpops.csv")
+#write.csv(johnstonei_filter_climate, "johnstonei_establishedpops.csv")
 
 #### Load in and process bioclimate data 
 
@@ -206,15 +207,15 @@ johnstonei_final<- inner_join(johnstonei_bioclim, johnstonei_filter_climate)
 ##Autocorrelation for each species 
 corr_coqui <- coqui_final[c("bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19")] # grouping all independent continuous factors into a single object to facilitate running the correlations
 coqui_corr <- corr.test(corr_coqui, use = "pairwise", method = "pearson", adjust = "none") # runs the pairwise correlations between the independent continuous factors.
-write.csv(coqui_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_coqui_bioclimate.csv")
+#write.csv(coqui_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_coqui_bioclimate.csv")
 
 corr_planirostris <- planirostris_final[c("bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19")] # grouping all independent continuous factors into a single object to facilitate running the correlations
 planirostris_corr <- corr.test(corr_planirostris, use = "pairwise", method = "pearson", adjust = "none") # runs the pairwise correlations between the independent continuous factors.
-write.csv(planirostris_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_planirostris_bioclimate.csv")
+#write.csv(planirostris_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_planirostris_bioclimate.csv")
 
 corr_johnstonei <- johnstonei_final[c("bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19")] # grouping all independent continuous factors into a single object to facilitate running the correlations
 johnstonei_corr <- corr.test(corr_johnstonei, use = "pairwise", method = "pearson", adjust = "none") # runs the pairwise correlations between the independent continuous factors.
-write.csv(johnstonei_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_johnstonei_bioclimate.csv")
+#write.csv(johnstonei_corr$r, "C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Climate_Analysis_EstablishmentOnly/autocorrelation_johnstonei_bioclimate.csv")
 
 
 
@@ -246,9 +247,6 @@ johnstonei_compare<- rbind(johnstonei_native, johnstonei_invasive)
 # Coqui PCA
 my.pca.coqui <- prcomp(coqui_compare[c(7:8,10,18:21,23:25)], center=T, scale=TRUE)
 summary(my.pca.coqui) 
-str(my.pca.coqui)
-my.pca.coqui$rotation
-my.pca.coqui$rotation[,1]
 
 # Plot PCA #
 prin_comp_coqui <-rda(coqui_compare[c(7:8,10,18:21,23:25)], center = T, scale=TRUE)
@@ -298,9 +296,7 @@ pca_coqui4<- autoplot(my.pca.coqui, x=1, y = 4, data = coqui_compare, colour = "
 # Planirostris PCA
 my.pca.planirostris <- prcomp(planirostris_compare[c(7:9,11,14,16,18,20,21,24,25)], center=T, scale=TRUE)
 summary(my.pca.planirostris) 
-str(my.pca.planirostris)
-my.pca.planirostris$rotation
-my.pca.planirostris$rotation[,1]
+
 
 # Plot PCA #
 prin_comp_planirostris <-rda(planirostris_compare[c(7:9,11,14,16,18,20,21,24,25)], scale=TRUE)
@@ -347,9 +343,6 @@ pca_planirostris4<- autoplot(my.pca.planirostris, x=1, y=4, data = planirostris_
 # johnstonei PCA
 my.pca.johnstonei <- prcomp(johnstonei_compare[c(7,10,13,18,20,21,24)], center=T, scale=TRUE)
 summary(my.pca.johnstonei) 
-str(my.pca.johnstonei)
-my.pca.johnstonei$rotation
-my.pca.johnstonei$rotation[,1]
 
 # Plot PCA #
 prin_comp_johnstonei <-rda(johnstonei_compare[c(7,10,13,18,20,21,24)], scale=TRUE)
@@ -375,7 +368,7 @@ pca_johnstonei<- autoplot(my.pca.johnstonei, x=1, y=2, data = johnstonei_compare
 
 
 
-pca_johnstonei3 <- autoplot(my.pca.johnstonei, x=1, y=2, data = johnstonei_compare, colour = 'status', fill = "status",
+pca_johnstonei3 <- autoplot(my.pca.johnstonei, x=1, y=3, data = johnstonei_compare, colour = 'status', fill = "status",
                             loadings = F, loadings.label = F, pch = 4, size = 3)+labs(title = "E. johnstonei")+theme_classic()+
   theme(plot.title = element_text(size = 35, face = "italic"), 
         axis.title.x = element_text(size = 30, face = "bold"),
@@ -386,7 +379,7 @@ pca_johnstonei3 <- autoplot(my.pca.johnstonei, x=1, y=2, data = johnstonei_compa
         legend.title = element_text(size = 30, face = "bold"))+
   scale_fill_manual(values=c("skyblue2", "darkseagreen3", "khaki1"))
 
-pca_johnstonei4<- autoplot(my.pca.johnstonei, x=1, y=2, data = johnstonei_compare, colour = 'status', fill = "status",
+pca_johnstonei4<- autoplot(my.pca.johnstonei, x=1, y=4, data = johnstonei_compare, colour = 'status', fill = "status",
                            loadings = F, loadings.label = F, pch = 4, size = 3)+labs(title = "E. johnstonei")+theme_classic()+
   theme(plot.title = element_text(size = 35, face = "italic"), 
         axis.title.x = element_text(size = 30, face = "bold"),
@@ -398,7 +391,7 @@ pca_johnstonei4<- autoplot(my.pca.johnstonei, x=1, y=2, data = johnstonei_compar
   scale_fill_manual(values=c("skyblue2", "darkseagreen3", "khaki1"))
 
 ggarrange(pca_coqui, pca_planirostris, pca_johnstonei, nrow=1, ncol =3, common.legend = T, legend = "right")
-ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Figure2.tiff", units="in", width=25, height=15, dpi=300, compression = 'lzw')
+ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Figure4.tiff", units="in", width=25, height=15, dpi=150, compression = 'lzw')
 
 ggarrange(pca_coqui3, pca_planirostris3, pca_johnstonei3, nrow=1, ncol =3, common.legend = T, legend = "right")
 ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/FigureS1.tiff", units="in", width=25, height=15, dpi=300, compression = 'lzw')
@@ -506,12 +499,266 @@ bio18<- amt <- eleutherodactylus_comparisons %>%
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 
-
+  
 
 ggarrange(bio1, bio12,bio15, bio18, nrow = 2, ncol=2, common.legend = T, legend="right")
 
-ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Figure3.tiff", width = 25, height = 25, dpi = 300, compression = 'lzw')
+ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Figure3.tiff", width = 25, height = 25, dpi = 300, compression = 'lzw')
 dev.off()
+
+
+
+
+### Maps for introduction history 
+
+
+world_coordinates <- map_data("world") 
+
+
+coqui_history <- read.csv("coqui_history.csv") 
+planirostris_history<- read.csv("planirostris_history.csv")
+johnstonei_history<- read.csv("johnstonei_history.csv")
+
+
+coqui_history_filtered<- coqui_history %>% filter(Status  %in% c("Introduced", "Established", "Failed"))
+planirostris_history_filtered<- planirostris_history %>% filter(Status %in% c("Introduced", "Established", "Failed"))
+johnstonei_history_filtered<- johnstonei_history %>% filter(Status %in% c("Introduced", "Established", "Failed"))
+
+
+#### Coqui history ############################################################################################
+
+
+
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  theme_classic()+
+  coord_sf(xlim = c(-170, -40), ylim = c(-10, 80), expand = FALSE)+
+  geom_point(data = coqui_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status),  size = 6)+
+    theme(legend.position = "none",
+          axis.title.x = element_text(face = "bold", size = 50),
+          axis.title.y = element_text(face = "bold", size = 50),
+          axis.text.x = element_text(face = "bold", size = 45),
+          axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/coqui_world.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+
+# Virgin Islands 
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-66, -64), ylim = c(17, 19), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = coqui_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/coqui_VI.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+# Hawaii
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-160, -154), ylim = c(18, 23), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = coqui_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/coqui_HI.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+# California
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-120, -115), ylim = c(31, 35), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = coqui_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/coqui_CA.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+
+
+#### Planirostris History #############################################################################################################################
+
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  theme_classic()+
+  geom_point(data = planirostris_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status),  size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/planirostris_world.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+# USA
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-110, -75), ylim = c(23, 50), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = planirostris_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/planirostris_USA.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+## Central America - Carrribbean 
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-110, -50), ylim = c(0, 23), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = planirostris_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/planirostris_centralamerica.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+
+## Asia
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(100, 150), ylim = c(0, 30), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = planirostris_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/planirostris_asia.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+# Hawaii
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-160, -154), ylim = c(18, 23), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = planirostris_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/planirostris_HI.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+
+
+### Johnstonei History #########################################################################################################################################
+
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  theme_classic()+
+  geom_point(data = johnstonei_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status),  size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/johnstonei_world.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+## Antilles
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-65, -60), ylim = c(10, 17), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = johnstonei_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/johnstonei_antilles.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+## N south america
+ggplot() + geom_map( 
+  data = world_coordinates, map = world_coordinates, 
+  aes(long, lat, map_id = region), 
+  color = "grey", fill= "grey")+
+  geom_sf() +
+  coord_sf(xlim = c(-85, -65), ylim = c(2, 13), expand = FALSE)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  geom_point(data = johnstonei_history_filtered, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status), size = 6)+
+  theme(legend.position = "none",
+        axis.title.x = element_text(face = "bold", size = 50),
+        axis.title.y = element_text(face = "bold", size = 50),
+        axis.text.x = element_text(face = "bold", size = 45),
+        axis.text.y = element_text(face = "bold", size = 45))+
+  labs(x="Longitude", y="Latitude")+
+  scale_color_manual(values=c("blue", "red", "yellow"))
+ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/johnstonei_southamerica.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
 
 
 
