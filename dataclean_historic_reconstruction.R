@@ -15,7 +15,7 @@ library(psych)
 wd<- "C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Historic_Reconstruction"
 setwd(wd)
 
-coqui<- read.csv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Ecoqui_GBIF/Ecoqui_GBIF.CSV")
+coqui<- read.csv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Ecoqui_GBIF/Ecoqui_GBIF.csv")
 planirostris<-  read.csv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Eplanirostris_GBIF/Eplanirostris_GBIF.CSV")
 johnstonei<-  read.csv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Ejohnstonei_GBIF/Ejohnstonei_GBIF.CSV")
 
@@ -758,6 +758,8 @@ ggplot() + geom_map(
   labs(x="Longitude", y="Latitude")+
   scale_color_manual(values=c("blue", "red", "yellow"))
 ggsave("C:/Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Figures/Maps/johnstonei_southamerica.tiff",  width = 25, height = 25, dpi = 300, compression = 'lzw')
+
+
 
 
 
