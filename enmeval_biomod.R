@@ -136,13 +136,13 @@ Eplanirostris_envs.files <- list.files(path = "Eplanirostris_contemp", pattern =
 Eplanirostris_envs <- stack(Eplanirostris_envs.files)
 proj_wgs84 <- crs(Eplanirostris_envs)
 
-Eplanirostris_points <- read.csv("Eleutherodactylus_invasion_arcgis/Eplanirostris_rarefied_points.csv", header = T)
+Eplanirostris_points <- read.csv("Eleutherodactylus_invasion_arcgis/Eplanirostris2_rarefied_points.csv", header = T)
 Eplanirostris_coordinates <- cbind(Eplanirostris_points$decimalLon, Eplanirostris_points$decimalLat)
 colnames(Eplanirostris_coordinates ) <- c("Lon", "Lat")
 Eplanirostris_occs <- as.data.frame(Eplanirostris_coordinates)
 Eplanirostris_occs.z <- cbind(Eplanirostris_occs, raster::extract(Eplanirostris_envs, Eplanirostris_occs))
   
-Eplanirostris_bias <- raster("Eplanirostris_bias/eplanirostris.asc")
+Eplanirostris_bias <- raster("Eplanirostris_bias/eplanirostris2.asc")
 plot(Eplanirostris_bias)
 points(Eplanirostris_occs, col = "red")
 
@@ -564,7 +564,7 @@ Eplanirostris_data <- BIOMOD_FormatingData(
   resp.var = Eplanirostris_res['presence'],
   resp.xy = Eplanirostris_res[, c('Lon', 'Lat')],
   expl.var = Eplanirostris_envs,
-  resp.name = "E.planirostris",
+  resp.name = "E.planirostris2",
   PA.nb.rep = 1,
   PA.nb.absences = 10000,
   PA.strategy = 'random'
@@ -611,6 +611,7 @@ dimnames(Eplanirostris_model_scores)
 (Eplanirostris_model_eval.scor_mean <- aggregate(data = Eplanirostris_model_scores, calibration ~ metric.eval, FUN = mean))
   # TSS=0.442, ROC=0.784 (old)
   # TSS=0.536, ROC=0.845 (new)
+  # TSS=0.533, ROC=0.845 (new2)
 
 # Plot model evaluation scores
 bm_PlotEvalMean(Eplanirostris_model)
@@ -622,6 +623,7 @@ bm_PlotEvalMean(Eplanirostris_model)
 (Eplanirostris_var.imp_mean <- aggregate(data = Eplanirostris_model_var_import, var.imp ~ expl.var, FUN = mean))
   # bio1=0.381, bio2=0.043, bio3=0.159, bio5=0.137, bio8=0.094, bio12=0.108, bio14=0.107, bio18=118 (old)
   # bio1=0.237, bio2=0.029, bio3=0.063, bio5=0.205, bio8=0.471, bio12=0.150, bio14=0.068, bio15=0.067, bio18=0.087 (new)
+  # bio1=0.191, bio2=0.050, bio3=0.060, bio5=0.165, bio8=0.510, bio12=0.134, bio14=0.092, bio15=0.040, bio18=0.073 (new2)
 
 # Model response plots
 Eplanirostris_eval_plot <- 
@@ -650,6 +652,7 @@ Eplanirostris_ensemble_model <-
 (Eplanirostris_ensemble_model_scores <- get_evaluations(Eplanirostris_ensemble_model))
   # TSS=0.416, ROC=0.776 (old)
   # TSS=0.532, ROC=0.837 (new)
+  # TSS=0.521, ROC=0.839 (new2)
 
 # Check variable importance
 (Eplanirostris_ensemble_model_var_import <- get_variables_importance(Eplanirostris_ensemble_model))
@@ -658,6 +661,7 @@ Eplanirostris_ensemble_model <-
 (Eplanirostris_ensemble_var.imp_mean <- aggregate(data = Eplanirostris_ensemble_model_var_import, var.imp ~ expl.var, FUN = mean))
   # bio1=0.375, bio2=0.035, bio3=0.152, bio5=0.133, bio8=0.096, bio12=0.106, bio14=0.104, bio18=114 (old)
   # bio1=0.238, bio2=0.029, bio3=0.058, bio5=0.201, bio8=0.462, bio12=0.140, bio14=0.061, bio15=0.061, bio18=0.077 (new)
+  # bio1=0.205, bio2=0.052, bio3=0.055, bio5=0.169, bio8=0.518, bio12=0.132, bio14=0.095, bio15=0.030, bio18=0.063 (new2)
 
 # Model response plots
 Eplanirostris_ensemble_eval_plot <- 
@@ -991,15 +995,15 @@ Hawaii_window <- extent(-162.5, -154.5, 18.5, 22.5)
 US_window <- extent(-100, -70, 5, 45)
 Asia_window <- extent(110, 130, 5, 25)
 
-Eplanirostris_ensemble_present.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_present/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-combined_land_rast <- rasterize(combined_land[6], Eplanirostris_ensemble_present.pred.bin) # took too long -> use ArcGIS Pro
-#combined_land_rast <- raster("Eleutherodactylus_invasion_arcgis/Epla_combined_land_rast.tif")
+Eplanirostris_ensemble_present.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_present/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+#combined_land_rast <- rasterize(combined_land[6], Eplanirostris_ensemble_present.pred.bin) # took too long -> use ArcGIS Pro
+combined_land_rast <- raster("Eleutherodactylus_invasion_arcgis/Epla_combined_land_rast.tif")
 #raster_outline <- rasterToPolygons(combined_land_rast, dissolve = TRUE) # took too long -> use ArcGIS Pro
 #raster_outline <- terra::vect("Eleutherodactylus_invasion_arcgis/Epla_combined_land_poly.shp")
 #raster_outline_US <- crop(raster_outline, US_window)
 #raster_outline_US <- project(raster_outline_US, crs(combined_land_rast))
 
-tiff("./E.planirostris/Hawaii_present_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Hawaii_present_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_present.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
@@ -1009,7 +1013,7 @@ dev.off()
 #plot(combined_land_rast, col = "#E6E402", legend=FALSE, asp=1, add=TRUE)
 #plot(Eplanirostris_ensemble_present.pred.bin, add=TRUE, legend=FALSE)
 
-tiff("./E.planirostris/US_present_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_present_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_present.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline_US, border = "black", lwd = 0.5, add = TRUE, col = NA)
@@ -1019,161 +1023,162 @@ dev.off()
 #plot(combined_land_rast, col = "#E6E402", legend=FALSE, asp=1, add=TRUE)
 #plot(Eplanirostris_ensemble_present.pred.bin, add=TRUE, legend=FALSE)
 
-tiff("./E.planirostris/Asia_present_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_present_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_present.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2021.2040_ssp126.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2021-2040_ssp126/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2021.2040_ssp126_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2021.2040_ssp126.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2021-2040_ssp126/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2021.2040_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp126.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2021.2040_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2021.2040_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp126.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2021.2040_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2021.2040_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp126.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2041.2060_ssp126.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2041-2060_ssp126/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2041.2060_ssp126_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2041.2060_ssp126.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2041-2060_ssp126/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2041.2060_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp126.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2041.2060_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2041.2060_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp126.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2041.2060_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2041.2060_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp126.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2061.2080_ssp126.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2061-2080_ssp126/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2061.2080_ssp126_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2061.2080_ssp126.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2061-2080_ssp126/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2061.2080_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp126.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2061.2080_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2061.2080_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp126.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2061.2080_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2061.2080_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp126.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2081.2100_ssp126.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2081-2100_ssp126/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2081.2100_ssp126_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2081.2100_ssp126.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2081-2100_ssp126/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2081.2100_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp126.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2081.2100_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2081.2100_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp126.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2081.2100_ssp126_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2081.2100_ssp126_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp126.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
 
-Eplanirostris_ensemble_2021.2040_ssp585.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2021-2040_ssp585/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2021.2040_ssp585_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2021.2040_ssp585.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2021-2040_ssp585/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2021.2040_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp585.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2021.2040_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2021.2040_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp585.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2021.2040_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2021.2040_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2021.2040_ssp585.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2041.2060_ssp585.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2041-2060_ssp585/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2041.2060_ssp585_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2041.2060_ssp585.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2041-2060_ssp585/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2041.2060_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp585.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2041.2060_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2041.2060_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp585.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2041.2060_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2041.2060_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2041.2060_ssp585.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2061.2080_ssp585.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2061-2080_ssp585/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2061.2080_ssp585_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2061.2080_ssp585.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2061-2080_ssp585/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2061.2080_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp585.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2061.2080_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2061.2080_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp585.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2061.2080_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2061.2080_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2061.2080_ssp585.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-Eplanirostris_ensemble_2081.2100_ssp585.pred.bin <- raster("./E.planirostris/proj_Eplanirostris_2081-2100_ssp585/individual_projections/E.planirostris_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
-tiff("./E.planirostris/Hawaii_2081.2100_ssp585_bin.tiff", width=664, height=664)
+Eplanirostris_ensemble_2081.2100_ssp585.pred.bin <- raster("./E.planirostris2/proj_Eplanirostris_2081-2100_ssp585/individual_projections/E.planirostris2_EMwmeanByTSS_mergedData_mergedRun_mergedAlgo_TSSbin.tif")
+tiff("./E.planirostris2/Hawaii_2081.2100_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Hawaii_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp585.pred.bin, ext=Hawaii_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Hawaii_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/US_2081.2100_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/US_2081.2100_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=US_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp585.pred.bin, ext=US_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=US_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
 
-tiff("./E.planirostris/Asia_2081.2100_ssp585_bin.tiff", width=664, height=664)
+tiff("./E.planirostris2/Asia_2081.2100_ssp585_bin.tiff", width=664, height=664)
 plot(combined_land_rast, col = "black", legend=FALSE, ext=Asia_window, asp=1)
 plot(Eplanirostris_ensemble_2081.2100_ssp585.pred.bin, ext=Asia_window, col = custom_palette(100), breaks = seq(zlim[1], zlim[2], length.out = 100), legend=FALSE, add=TRUE)
 #plot(raster_outline, ext=Asia_window, add = TRUE, border = "black", lwd = 2, col = NA)
 dev.off()
+
