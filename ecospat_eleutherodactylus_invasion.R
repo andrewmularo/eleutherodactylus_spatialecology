@@ -3683,23 +3683,6 @@ ecospat.plot.contrib(contrib=antillensis_pca.env$co, eigen=antillensis_pca.env$e
 ## eigenvectors for each variable
 write.csv(antillensis_pca.env$c1, "antillensis_princomp.csv")
 
-
-my.pca.antillensis <- prcomp(antillensis_final[,13:31], center=T, scale=TRUE)
-prin_comp_antillensis <-rda(antillensis_final[,13:31], center = T, scale=TRUE)
-
-pca_antillensis<- autoplot(my.pca.antillensis, x=1, y = 2, data = antillensis_final, colour = "countryCode", 
-                           loadings = F, loadings.label = F, pch = 4, size = 3)+labs(title = "E. antillensis")+theme_classic()+
-  theme(plot.title = element_text(size = 35, face = "italic"), 
-        axis.title.x = element_text(size = 30, face = "bold"),
-        axis.title.y = element_text(size = 30, face = "bold"),
-        axis.text.x = element_text(size = 20, face = "bold"),
-        axis.text.y = element_text(size = 20, face = "bold"),
-        legend.text = element_text(size = 5, face = "bold"),
-        legend.title = element_text(size = 5, face = "bold"))+
-  scale_fill_manual(values=c("skyblue2", "darkseagreen3", "khaki1"))
-
-
-
 #PCA scoresfor the wholestudyarea
 antillensis_scores.globclim <-antillensis_pca.env$li
 
@@ -3782,5 +3765,6 @@ ecospat.plot.overlap.test(martinicensis_sim.test, "D", "Similarity")
 ecospat.plot.niche.dyn(martinicensis_grid.clim.nat, martinicensis_grid.clim.inv, quant=0.25, interest=2, name.axis1="PC1 (38.19%)", name.axis2="PC2 (21.14%)", transparency = 80) 
 ecospat.shift.centroids(martinicensis_scores.sp.nat, martinicensis_scores.sp.inv, martinicensis_scores.clim.nat, martinicensis_scores.clim.inv)
 ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Biological_Diversity_Submission/Submission2/Figures/martinicensis_niche.jpeg", width=25, height=25, dpi=300)
+
 
 
