@@ -19,12 +19,14 @@ planirostris <- read_tsv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kir
 johnstonei<- read_tsv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Version2/Ejohnstonei.csv")
 antillensis<- read_tsv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Version2/Eantillensis.csv")
 martinicensis<- read_tsv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Version2/Emartinicensis.csv")
-cystignathoides<- read_tsv("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/RawData/Version2/Ecystignathoides.csv")
 
 ##### Data cleaning - tidyverse and coordinatecleaner
 
-eleuth<- rbind(coqui, planirostris, johnstonei, antillensis, martinicensis, cystignathoides)
+eleuth<- rbind(coqui, planirostris, johnstonei, antillensis, martinicensis)
 eleuth<- as.data.frame(eleuth)
+
+### Note = we did not use E. cystignathoides due to ambigous native/invasive range
+
 
 ### QC for historic records
 eleuth_cleaned<- eleuth %>% cc_aohi(lon = "decimalLongitude", lat = "decimalLatitude") %>% 
@@ -33,25 +35,16 @@ eleuth_cleaned<- eleuth %>% cc_aohi(lon = "decimalLongitude", lat = "decimalLati
 
 
 eleuth_cleaned_dates<- eleuth_cleaned %>% select(c("gbifID", "species", "countryCode", "locality", "stateProvince",
-                                                   "decimalLatitude", "decimalLongitude", "day", "month", "year")) %>% 
+                                                   "decimalLatitude", "decimalLongitude", "day", "month", "year", "license", "institutionCode", "rightsHolder")) %>% 
   filter(year != "NA")
 
-# write.csv(eleuth_cleaned_dates, "eleutherocatylus_invasionhistory.csv")
+write.csv(eleuth_cleaned_dates, "eleutherocatylus_invasionhistory_manualcuration_v2.csv")
 
-#write.csv(eleuth_cleaned, "eleuth_cleaned.csv")
-
-
-
-# Check to see how many are flagged with each command
-#cc_aohi(eleuth, lon = "decimalLongitude", lat = "decimalLatitude") # 232 marked records
-#cc_dupl(eleuth, lon = "decimalLongitude", lat = "decimalLatitude", species = "species") #21360 marked records - will not use
-#cc_cen(eleuth, lon = "decimalLongitude", lat = "decimalLatitude", species = "species") # 933 records
-#cc_coun(eleuth, lon = "decimalLongitude", lat = "decimalLatitude", iso3 = "countryCode") ### this function isn't working properly, getting rid of all points
-#cc_gbif(eleuth, lon = "decimalLongitude", lat = "decimalLatitude", species = "species", buffer = 1000)## No Records Removed
-#cc_inst(eleuth, lon = "decimalLongitude", lat = "decimalLatitude", species = "species", buffer = 100) ## Removed 137 records
+### Manual curation of invasive status
 
 
-eleuth_cleaned_mancuration<- read.csv("eleutherocatylus_invasionhistory_manualcuration.csv")
+eleuth_cleaned_mancuration<- read.csv("eleutherocatylus_invasionhistory_manualcuration_v2.csv")
+
 
 
 coqui_final<- eleuth_cleaned_mancuration %>% filter(species == "Eleutherodactylus coqui") %>% filter(Status != "NA")
@@ -228,7 +221,7 @@ ggplot() + geom_map(
   color = "grey", fill= "grey")+
   geom_sf() +
   theme_classic()+
-  coord_sf(xlim = c(-120, -40), ylim = c(-10, 40), expand = FALSE)+
+  coord_sf(xlim = c(-120, -30), ylim = c(-40, 40), expand = FALSE)+
   geom_point(data = johnstonei_final, aes(decimalLongitude, decimalLatitude, color = Status, fill = Status),  size = 6)+
   theme(legend.position = "none",
         axis.title.x = element_text(face = "bold", size = 75),
@@ -325,7 +318,6 @@ eleuth_cleaned_climate<- eleuth_cleaned_mancuration %>%
   full_join(eleuth_cleaned)%>% 
   filter(decimalLatitude != "NA") %>% 
   filter(Status %in% c("Likely established", "Native")) %>% 
-  filter(species !="Eleutherodactylus cystignathoides")%>% 
   filter(coordinateUncertaintyInMeters <= 5000 ) %>% 
   filter(year >= 1951) 
 
@@ -335,18 +327,11 @@ eleuth_cleaned_climate<- eleuth_cleaned_mancuration %>%
 
 
 
-rm(list = ls())
-
-
-
-
-
 # split points into different years ---------------------------------------
 
 # Changed the name of the file manually to send to collaborators, 
-# eleutherodactylus_cleaned_for_ENM_final_2 and eleutherodactylus_cleaned_for _ENM_final_2revised
+# eleutherodactylus_cleaned_for_ENM_final_2 and eleutherodactylus_cleaned_for_ENM_final_2revised
 # are the same files
-eleuth_cleaned_climate<- read.csv("eleutherodactylus_cleaned_forENM_final_2revised.csv")
 
 ### Split points into different
 
@@ -3528,12 +3513,6 @@ climate_final_binded <- cbind(c(climate_data[1:2], climate_data[5:6], climate_da
 
 # EcoSpat Analysis --------------------------------------------------------
 
-rm(list = ls())
-
-climate_final_binded<- read.csv("climate_final_binded2.csv")
-
-
-
  
 coqui_final<- climate_final_binded %>% filter(species == "Eleutherodactylus coqui")%>% filter(bio1 != "NA")
 planirostris_final<- climate_final_binded %>% filter(species == "Eleutherodactylus planirostris") %>% filter(bio1 != "NA")
@@ -3544,7 +3523,7 @@ martinicensis_final<- climate_final_binded%>% filter(species == "Eleutherodactyl
 
 
 ## E. coqui #########################################################################################################
-coqui_pca.env <- ade4::dudi.pca(coqui_final[,13:31],scannf=F,nf=2) 
+coqui_pca.env <- ade4::dudi.pca(coqui_final[,12:30],scannf=F,nf=2) 
 ecospat.plot.contrib(contrib=coqui_pca.env$co, eigen=coqui_pca.env$eig)
 ## eigenvectors for each variable
 write.csv(coqui_pca.env$c1, "coqui_princomp.csv")
@@ -3554,16 +3533,16 @@ write.csv(coqui_pca.env$c1, "coqui_princomp.csv")
 coqui_scores.globclim <-coqui_pca.env$li
 
 #PCA scoresfor the species nativedistribution 
-coqui_scores.sp.nat<-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,12]=="Native"),13:31])$li
+coqui_scores.sp.nat<-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the species invasive distribution 
-coqui_scores.sp.inv<-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,12]=="Likely established"),13:31])$li
+coqui_scores.sp.inv<-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,11]=="Likely established"),12:30])$li
 
 #PCA scoresfor the wholenativestudyarea - Double check this
-coqui_scores.clim.nat <-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,12]=="Native"),13:31])$li
+coqui_scores.clim.nat <-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the wholeinvaded studyarea - Double check this
-coqui_scores.clim.inv <-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,12]=="Likely established"),13:31])$li
+coqui_scores.clim.inv <-ade4::suprow(coqui_pca.env,coqui_final[which(coqui_final[,11]=="Likely established"),12:30])$li
 
 #gridding the nativeniche 
 coqui_grid.clim.nat<-ecospat.grid.clim.dyn(glob=coqui_scores.globclim, glob1=coqui_scores.clim.nat, sp=coqui_scores.sp.nat,R=100, th.sp=0)
@@ -3588,7 +3567,7 @@ ecospat.shift.centroids(coqui_scores.sp.nat, coqui_scores.sp.inv, coqui_scores.c
 ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Biological_Diversity_Submission/Submission2/Figures/coqui_niche.tiff", units="in", width=25, height=15, dpi=150, compression = 'lzw')
 
 ## E. planirostris #########################################################################################################
-planirostris_pca.env <- ade4::dudi.pca(planirostris_final[,13:31],scannf=F,nf=2) 
+planirostris_pca.env <- ade4::dudi.pca(planirostris_final[,12:30],scannf=F,nf=2) 
 ecospat.plot.contrib(contrib=planirostris_pca.env$co, eigen=planirostris_pca.env$eig)
 ## eigenvectors for each variable
 write.csv(planirostris_pca.env$c1, "planirostris_princomp.csv")
@@ -3598,16 +3577,16 @@ write.csv(planirostris_pca.env$c1, "planirostris_princomp.csv")
 planirostris_scores.globclim <-planirostris_pca.env$li
 
 #PCA scoresfor the species nativedistribution 
-planirostris_scores.sp.nat<-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,12]=="Native"),13:31])$li
+planirostris_scores.sp.nat<-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the species invasive distribution 
-planirostris_scores.sp.inv<-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,12]=="Likely established"),13:31])$li
+planirostris_scores.sp.inv<-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[11]=="Likely established"),12:30])$li
 
 #PCA scoresfor the wholenativestudyarea 
-planirostris_scores.clim.nat <-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,12]=="Native"),13:31])$li
+planirostris_scores.clim.nat <-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the wholeinvaded studyarea 
-planirostris_scores.clim.inv <-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,12]=="Likely established"),13:31])$li
+planirostris_scores.clim.inv <-ade4::suprow(planirostris_pca.env,planirostris_final[which(planirostris_final[,11]=="Likely established"),12:30])$li
 
 #gridding the nativeniche 
 planirostris_grid.clim.nat<-ecospat.grid.clim.dyn(glob=planirostris_scores.globclim, glob1=planirostris_scores.clim.nat, sp=planirostris_scores.sp.nat,R=100, th.sp=0)
@@ -3633,7 +3612,7 @@ ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodac
 
 
 ## E. johnstonei #########################################################################################################
-johnstonei_pca.env <- ade4::dudi.pca(johnstonei_final[,13:31],scannf=F,nf=2) 
+johnstonei_pca.env <- ade4::dudi.pca(johnstonei_final[,12:30],scannf=F,nf=2) 
 ecospat.plot.contrib(contrib=johnstonei_pca.env$co, eigen=johnstonei_pca.env$eig)
 ## eigenvectors for each variable
 write.csv(johnstonei_pca.env$c1, "johnstonei_princomp.csv")
@@ -3643,16 +3622,16 @@ write.csv(johnstonei_pca.env$c1, "johnstonei_princomp.csv")
 johnstonei_scores.globclim <-johnstonei_pca.env$li
 
 #PCA scoresfor the species nativedistribution 
-johnstonei_scores.sp.nat<-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,12]=="Native"),13:31])$li
+johnstonei_scores.sp.nat<-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the species invasive distribution 
-johnstonei_scores.sp.inv<-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,12]=="Likely established"),13:31])$li
+johnstonei_scores.sp.inv<-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,11]=="Likely established"),12:30])$li
 
 #PCA scoresfor the wholenativestudyarea - Double check this
-johnstonei_scores.clim.nat <-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,12]=="Native"),13:31])$li
+johnstonei_scores.clim.nat <-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the wholeinvaded studyarea - Double check this
-johnstonei_scores.clim.inv <-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,12]=="Likely established"),13:31])$li
+johnstonei_scores.clim.inv <-ade4::suprow(johnstonei_pca.env,johnstonei_final[which(johnstonei_final[,11]=="Likely established"),12:30])$li
 
 #gridding the nativeniche 
 johnstonei_grid.clim.nat<-ecospat.grid.clim.dyn(glob=johnstonei_scores.globclim, glob1=johnstonei_scores.clim.nat, sp=johnstonei_scores.sp.nat,R=100, th.sp=0)
@@ -3678,25 +3657,26 @@ ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodac
 
 
 ## E. antillensis #########################################################################################################
-antillensis_pca.env <- ade4::dudi.pca(antillensis_final[,13:31],scannf=F,nf=2) 
+antillensis_pca.env <- ade4::dudi.pca(antillensis_final[,12:30],scannf=F,nf=2) 
 ecospat.plot.contrib(contrib=antillensis_pca.env$co, eigen=antillensis_pca.env$eig)
 ## eigenvectors for each variable
 write.csv(antillensis_pca.env$c1, "antillensis_princomp.csv")
+
 
 #PCA scoresfor the wholestudyarea
 antillensis_scores.globclim <-antillensis_pca.env$li
 
 #PCA scoresfor the species nativedistribution 
-antillensis_scores.sp.nat<-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,12]=="Native"),13:31])$li
+antillensis_scores.sp.nat<-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the species invasive distribution 
-antillensis_scores.sp.inv<-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,12]=="Likely established"),13:31])$li
+antillensis_scores.sp.inv<-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,11]=="Likely established"),12:30])$li
 
 #PCA scoresfor the wholenativestudyarea - Double check this
-antillensis_scores.clim.nat <-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,12]=="Native"),13:31])$li
+antillensis_scores.clim.nat <-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the wholeinvaded studyarea - Double check this
-antillensis_scores.clim.inv <-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,12]=="Likely established"),13:31])$li
+antillensis_scores.clim.inv <-ade4::suprow(antillensis_pca.env,antillensis_final[which(antillensis_final[,11]=="Likely established"),12:30])$li
 
 #gridding the nativeniche 
 antillensis_grid.clim.nat<-ecospat.grid.clim.dyn(glob=antillensis_scores.globclim, glob1=antillensis_scores.clim.nat, sp=antillensis_scores.sp.nat,R=100, th.sp=0)
@@ -3723,7 +3703,7 @@ ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodac
 
 
 ## E. martinicensis #########################################################################################################
-martinicensis_pca.env <- ade4::dudi.pca(martinicensis_final[,13:31],scannf=F,nf=2) 
+martinicensis_pca.env <- ade4::dudi.pca(martinicensis_final[,12:30],scannf=F,nf=2) 
 ecospat.plot.contrib(contrib=martinicensis_pca.env$co, eigen=martinicensis_pca.env$eig)
 ## eigenvectors for each variable
 write.csv(martinicensis_pca.env$c1, "martinicensis_princomp.csv")
@@ -3733,16 +3713,16 @@ write.csv(martinicensis_pca.env$c1, "martinicensis_princomp.csv")
 martinicensis_scores.globclim <-martinicensis_pca.env$li
 
 #PCA scoresfor the species nativedistribution 
-martinicensis_scores.sp.nat<-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,12]=="Native"),13:31])$li
+martinicensis_scores.sp.nat<-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the species invasive distribution 
-martinicensis_scores.sp.inv<-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,12]=="Likely established"),13:31])$li
+martinicensis_scores.sp.inv<-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,11]=="Likely established"),12:30])$li
 
 #PCA scoresfor the wholenativestudyarea - Double check this
-martinicensis_scores.clim.nat <-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,12]=="Native"),13:31])$li
+martinicensis_scores.clim.nat <-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,11]=="Native"),12:30])$li
 
 #PCA scoresfor the wholeinvaded studyarea - Double check this
-martinicensis_scores.clim.inv <-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,12]=="Likely established"),13:31])$li
+martinicensis_scores.clim.inv <-ade4::suprow(martinicensis_pca.env,martinicensis_final[which(martinicensis_final[,11]=="Likely established"),12:30])$li
 
 #gridding the nativeniche 
 martinicensis_grid.clim.nat<-ecospat.grid.clim.dyn(glob=martinicensis_scores.globclim, glob1=martinicensis_scores.clim.nat, sp=martinicensis_scores.sp.nat,R=100, th.sp=0)
@@ -3765,6 +3745,9 @@ ecospat.plot.overlap.test(martinicensis_sim.test, "D", "Similarity")
 ecospat.plot.niche.dyn(martinicensis_grid.clim.nat, martinicensis_grid.clim.inv, quant=0.25, interest=2, name.axis1="PC1 (38.19%)", name.axis2="PC2 (21.14%)", transparency = 80) 
 ecospat.shift.centroids(martinicensis_scores.sp.nat, martinicensis_scores.sp.inv, martinicensis_scores.clim.nat, martinicensis_scores.clim.inv)
 ggsave("C://Users/andre/OneDrive/Documents/Bernal Lab/Jack_Kirkwood/Eleutherodactylus_Redo_2023_2024/Manuscript/Biological_Diversity_Submission/Submission2/Figures/martinicensis_niche.jpeg", width=25, height=25, dpi=300)
+
+
+
 
 
 
